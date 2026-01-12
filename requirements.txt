@@ -1,0 +1,5 @@
+# Aucune dépendance externe requise pour l'usage local
+# Python 3.7+ suffit
+
+# Pour le déploiement sur Render (serveur de production)
+gunicorn==21.2.0

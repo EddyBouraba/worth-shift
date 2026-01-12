@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparateur de Remplacements 3x8</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Comparateur de Remplacements 3x8</h1>
+            <p class="subtitle">Calculez et comparez vos scénarios de remplacement</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('create')">📝 Créer un Scénario</button>
+            <button class="tab-button" onclick="showTab('compare')">⚖️ Comparer</button>
+            <button class="tab-button" onclick="showTab('help')">❓ Aide</button>
+        </div>
+
+        <!-- Onglet Créer -->
+        <div id="create-tab" class="tab-content active">
+            <div class="two-columns">
+                <!-- Colonne gauche: Saisie -->
+                <div class="left-panel">
+                    <h2>Nouveau Scénario</h2>
+
+                    <div class="form-group">
+                        <label for="scenario-name">Nom du scénario:</label>
+                        <input type="text" id="scenario-name" placeholder="Ex: Semaine du 20 janvier">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hourly-rate">Taux horaire (€/h):</label>
+                        <input type="number" id="hourly-rate" value="20" step="0.1" min="0">
+                    </div>
+
+                    <h3>Ajouter des shifts</h3>
+                    <div class="add-shift-form">
+                        <div class="form-group">
+                            <label for="shift-date">Date:</label>
+                            <input type="date" id="shift-date">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shift-type">Type de shift:</label>
+                            <select id="shift-type">
+                                <option value="MATIN">MATIN (06:00-15:00)</option>
+                                <option value="APRES_MIDI">APRÈS-MIDI (14:00-23:00)</option>
+                                <option value="NUIT">NUIT (22:00-07:00)</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="addShift()">➕ Ajouter ce shift</button>
+                    </div>
+
+                    <h3>Shifts ajoutés (<span id="shift-count">0</span>)</h3>
+                    <div id="shifts-list" class="shifts-list"></div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="clearShifts()">🧹 Tout effacer</button>
+                        <button class="btn btn-success" onclick="saveScenario()">💾 Sauvegarder</button>
+                        <button class="btn btn-primary" onclick="calculateScenario()">🧮 Calculer</button>
+                    </div>
+                </div>
+
+                <!-- Colonne droite: Résultats -->
+                <div class="right-panel">
+                    <h2>Résultats</h2>
+                    <div id="result" class="result-box">
+                        <p class="placeholder">Les résultats s'afficheront ici après le calcul.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Comparer -->
+        <div id="compare-tab" class="tab-content">
+            <h2>Comparer des Scénarios</h2>
+
+            <div class="scenarios-section">
+                <h3>Scénarios sauvegardés</h3>
+                <button class="btn btn-secondary" onclick="loadScenarios()">🔄 Actualiser la liste</button>
+                <div id="saved-scenarios" class="saved-scenarios">
+                    <p class="placeholder">Aucun scénario sauvegardé. Créez-en dans l'onglet précédent.</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-danger" onclick="deleteSelectedScenarios()">🗑️ Supprimer sélectionnés</button>
+                    <button class="btn btn-primary" onclick="compareScenarios()">⚖️ Comparer sélectionnés</button>
+                </div>
+            </div>
+
+            <div class="comparison-result">
+                <h3>Résultat de la comparaison</h3>
+                <div id="compare-result" class="result-box">
+                    <p class="placeholder">Sélectionnez au moins 2 scénarios et cliquez sur "Comparer".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Aide -->
+        <div id="help-tab" class="tab-content">
+            <div class="help-content">
+                <h2>Guide d'utilisation</h2>
+
+                <section class="help-section">
+                    <h3>📝 Créer un scénario</h3>
+                    <ol>
+                        <li>Allez dans l'onglet "Créer un Scénario"</li>
+                        <li>Entrez un nom pour votre scénario</li>
+                        <li>Définissez votre taux horaire (par défaut: 13€/h)</li>
+                        <li>Ajoutez vos shifts un par un:
+                            <ul>
+                                <li>Sélectionnez la date</li>
+                                <li>Choisissez le type: MATIN, APRÈS-MIDI ou NUIT</li>
+                                <li>Cliquez sur "Ajouter ce shift"</li>
+                            </ul>
+                        </li>
+                        <li>Cliquez sur "Calculer" pour voir les résultats</li>
+                        <li>Cliquez sur "Sauvegarder" pour garder le scénario</li>
+                    </ol>
+                </section>
+
+                <section class="help-section">
+                    <h3>⚖️ Comparer des scénarios</h3>
+                    <ol>
+                        <li>Créez plusieurs scénarios et sauvegardez-les</li>
+                        <li>Allez dans l'onglet "Comparer"</li>
+                        <li>Cochez les scénarios à comparer (minimum 2)</li>
+                        <li>Cliquez sur "Comparer sélectionnés"</li>
+                        <li>Le meilleur scénario est automatiquement identifié!</li>
+                    </ol>
+                </section>
+
+                <section class="help-section">
+                    <h3>💰 Types de shifts</h3>
+                    <table class="info-table">
+                        <tr>
+                            <th>Type</th>
+                            <th>Horaires</th>
+                            <th>Durée</th>
+                        </tr>
+                        <tr>
+                            <td><strong>MATIN</strong></td>
+                            <td>06:00 → 15:00</td>
+                            <td>9 heures</td>
+                        </tr>
+                        <tr>
+                            <td><strong>APRÈS-MIDI</strong></td>
+                            <td>14:00 → 23:00</td>
+                            <td>9 heures</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NUIT</strong></td>
+                            <td>22:00 → 07:00 (lendemain)</td>
+                            <td>9 heures</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section class="help-section">
+                    <h3>💸 Majorations automatiques</h3>
+                    <table class="info-table">
+                        <tr>
+                            <th>Type</th>
+                            <th>Plage horaire</th>
+                            <th>Majoration</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Heures de nuit</strong></td>
+                            <td>21:00 - 06:00</td>
+                            <td class="bonus">+15%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Heures du dimanche</strong></td>
+                            <td>Dimanche (00:00-24:00)</td>
+                            <td class="bonus">+25%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nuit + Dimanche</strong></td>
+                            <td>Cumul des deux</td>
+                            <td class="bonus-special">+40%</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section class="help-section">
+                    <h3>💡 Conseils</h3>
+                    <div class="tips">
+                        <div class="tip">
+                            <strong>✓ Pour maximiser vos gains:</strong>
+                            <ul>
+                                <li>Privilégiez les shifts du dimanche</li>
+                                <li>Les nuits du dimanche soir sont très rentables (2h à +40%)</li>
+                                <li>Combinez nuit + dimanche pour le maximum de majorations</li>
+                            </ul>
+                        </div>
+                        <div class="tip">
+                            <strong>✓ Comparaison:</strong>
+                            <ul>
+                                <li>Créez plusieurs options avant de choisir</li>
+                                <li>Le logiciel identifie automatiquement le meilleur</li>
+                                <li>Consultez le classement et les écarts en euros</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="help-section example">
+                    <h3>📊 Exemple de calcul</h3>
+                    <div class="example-box">
+                        <h4>Shift APRÈS-MIDI le dimanche (13€/h)</h4>
+                        <p><strong>Horaire:</strong> 14:00 → 23:00 (9 heures)</p>
+                        <ul>
+                            <li>14h-21h: 7h dimanche (+25%) = <strong>22.75€</strong> de bonus</li>
+                            <li>21h-23h: 2h nuit+dimanche (+40%) = <strong>10.40€</strong> de bonus</li>
+                        </ul>
+                        <p class="result-highlight">
+                            <strong>Rémunération:</strong><br>
+                            Base: 9h × 13€ = 117€<br>
+                            Bonus: 33.15€<br>
+                            <strong>TOTAL: 150.15€</strong>
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Comparateur de Remplacements 3x8 - Version Web 1.0</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

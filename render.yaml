@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: shift-comparator
+    env: python
+    buildCommand: pip install gunicorn
+    startCommand: gunicorn shift_comparator.web.wsgi_app:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0

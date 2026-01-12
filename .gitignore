@@ -41,3 +41,7 @@ htmlcov/
 
 # Other
 *.log
+
+# Setup
+*.egg
+*.egg-info/

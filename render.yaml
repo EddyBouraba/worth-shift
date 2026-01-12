@@ -4,5 +4,5 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: gunicorn shift_comparator.web.wsgi_app:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    buildCommand: pip install --upgrade pip && pip install -e .
+    startCommand: gunicorn shift_comparator.web.wsgi_app:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60 --log-level info
